@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "electrotest.h"
+#include <libresistance.h>
 
 /* Define the maximum allowable length for data entry */
 #define MAX_STRING_LENGTH 20
@@ -36,9 +37,7 @@ int start(char* str) {
 	printf("%s", generateMenu());
 
 	fgets (str, MAX_STRING_LENGTH, stdin);
-
-	//printf("Input %s", str);
-
+	
 	/* Parse the entry */
 	long menuChoice = parseMenuSelection(str);
 	
@@ -46,7 +45,7 @@ int start(char* str) {
 	switch (menuChoice) {
 
 	case 1:
-		
+		resCalc(str);
 		break;
 
 	case 2:
@@ -102,4 +101,82 @@ char* generateMenu() {
 
 	return menuString;
 
+}
+
+float resCalc(char* str) {
+
+	/* Allocate memory for the string of numbers */
+	
+	long count = -1;
+	do {
+		printf("Hur många komponenter vill du ange? ");
+		count = getInt(str);
+	
+	} while (count == -1 || count < 0);
+
+	
+	float *array = malloc (count * sizeof(float));
+	if (str == NULL) {
+
+		printf("Otillräckligt ledigt minne");
+		return -1;
+
+	}
+	
+	int i;
+	
+	for (i=0;i<count;i++) {
+		
+		long r = -1;
+		do {
+		printf("\nAnge resistans för resistor %d: ", (i+1));
+		r = getInt(str);
+		
+		} while (r == -1 || r < 0);
+		
+		array[i]=r;
+		
+	}
+	
+	char conn = 'x';
+	long choice = -1;
+		
+	do {
+	
+	printf("Vill du beräkna ersättningsresistans vid serie- (1) eller parallell-koppling (2)? ");
+	choice = getInt(str);
+	
+	if (choice == 1)
+		conn = 'S';
+	else if (choice == 2)
+		conn = 'P';
+	} while (choice == -1 || choice < 1);
+	
+	/*fgets(str, MAX_STRING_LENGTH, stdin);
+	const char* matches = "PS";
+	if (strchr(matches, str[0]) != NULL) {
+		strncpy(str, conn, 1);
+		printf("\nConn är %s", conn);
+	}*/
+	
+	float result = calc_resistance(count, conn, array);
+	printf("\nErsättningsresistansen är: %.2f\n", result);
+	return result;
+
+}
+
+/* getInt reads a long from standard in */
+long getInt(char* str) {
+	
+	long int i;
+	char *rest;
+  
+	if (fgets(str, MAX_STRING_LENGTH, stdin) != NULL) {
+		i = strtol(str, &rest, 0);
+    
+		if (str[0] != '\n' && (*rest == '\n' || *rest == '\0'))
+			return i; 
+		else 
+			return -1;
+	}  
 }
