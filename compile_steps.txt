@@ -1,0 +1,10 @@
+#Use these steps to compile electrotest with library support
+gcc -c -fpic resistancecalc.c
+
+gcc -shared -o libresistance.so resistancecalc.o
+
+export LD_LIBRARY_PATH=/ffp/home/root/lib:$LD_LIBRARY_PATH
+
+export C_INCLUDE_PATH=/ffp/home/root/include
+
+gcc -std=c99 -I/ffp/home/root/include -L/ffp/home/root/lib -o electrotest electrotest.c -lresistance
