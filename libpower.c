@@ -1,3 +1,5 @@
+#include <math.h>
+#include "libpower.h"
 
 // Module calculates heat effect from resistance
 //dependent on math.h 
@@ -10,7 +12,7 @@
 //P = U²/R  
 float calc_power_r(float volt, float resistance)
 {
-  return pow(volt, 2) / resistance; 
+  return pow(volt, 2.0f) / resistance; 
 }
 
 // P = U * I // 
