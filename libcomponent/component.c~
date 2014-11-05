@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <math.h>
+int e_resistance(int orig_resistance, int res_array[3]){
+  
+  int numkomp =0;
+  int ohm = 100;
+  int mult = 10000;
+  int res = orig_resistance;
+  int i;
+  int cohm = 0;
+
+  printf("skickad res %d\n", orig_resistance);
+  printf("res satt till: %d\n", res);
+
+  for(i = 0; i < 3; i++)
+    {
+      printf("kommer till for \n");
+
+      while(ohm >= 10 && res/(ohm*mult) < 1)
+	{
+	  if(ohm*mult == 39*mult || ohm*mult == 56*mult) 
+	  ohm = ceil(ohm/1.21);
+	  else if(ohm*mult == 100*mult)
+	  ohm = floor(ohm/1.21);  
+	  else
+	  ohm = round(ohm/1.21); 
+	  printf("i loopen: %d\n", ohm*mult);
+	  cohm++;
+	  mult = mult/10;
+	}  
+      if(ohm >= 10){
+      res_array[i] = ohm*mult;
+      printf("Res_arr: %d\n",res_array[i]);
+      res = res - ohm*mult;
+      printf("Ohm: %d\n", ohm);
+      printf("Res: %d\n", res);
+      numkomp++;
+      }
+      else
+	res_array[i] = 0;	
+    }
+  
+  for(i = 0; i < 3; i++)
+    printf("%d ",res_array[i]);
+  printf("antal resistor: %d ", cohm);
+  return numkomp;
+ }

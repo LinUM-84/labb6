@@ -1,0 +1,12 @@
+#include <stdio.h>
+int main() {
+
+  int res_array[3] = {0,0,0};
+  int orig_resistance;
+
+  printf("Ange resistans: ");
+  scanf("%d", &orig_resistance);
+  printf("%d\n", orig_resistance);
+  int count = e_resistance(orig_resistance, res_array);
+  printf("Antal resistorer: %d", count);
+}
