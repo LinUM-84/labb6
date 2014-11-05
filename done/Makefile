@@ -1,10 +1,9 @@
 obj = libpower.o resistancecalc.o
 curr_dir = $(shell pwd)
-libs = power resistance
 
 .PHONY: all
 all: lib 
-	cc -I"$(curr_dir)"/include -L"$(curr_dir)"/lib $(obj) -std=c99 -o electrotest electrotest.c -lm
+	cc -I"$(curr_dir)"/include -L"$(curr_dir)"/lib $(obj) -std=c99 -o electrotest electrotest.c -lm #compile with local libraries
 
 #objects
 libpower.o: libpower.h
@@ -22,15 +21,20 @@ lib: $(obj)
 
 .PHONY: install
 install: 
-	sudo cp electrotest /usr/bin
 	sudo cp lib/libpower.so /usr/lib
 	sudo cp lib/libresistance.so /usr/lib	
+	sudo chmod 755 /usr/lib/libpower.so
+	sudo chmod 755 /usr/lib/libresistance.so	
+	sudo ldconfig
+	cc  -std=c99 -o electrotest electrotest.c -lpower -lresistance -lm #recompile
+	sudo cp electrotest /usr/bin
 
 .PHONY: uninstall
 uninstall:
 	sudo rm /usr/bin/electrotest
 	sudo rm /usr/lib/libpower.so
 	sudo rm /usr/lib/libresistance.so
+	sudo ldconfig # not sure if this line is required
 
 .PHONY: clean
 clean: 

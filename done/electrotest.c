@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "electrotest.h"
-#include <libresistance.h>
+#include "libresistance.h"
 
 /* Define the maximum allowable length for data entry */
 #define MAX_STRING_LENGTH 20
