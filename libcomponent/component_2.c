@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include "component_2.h"
 
 int e_resistance( float orig_resistance, float *res_array){
   
