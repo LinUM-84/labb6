@@ -1,4 +1,4 @@
-obj = libpower.o resistancecalc.o
+obj = libpower.o resistancecalc.o libcomponent.o
 curr_dir = $(shell pwd)
 
 .PHONY: all
@@ -14,9 +14,13 @@ resistancecalc.o: resistancecalc.h
 	cc -c -fpic resistancecalc.c
 	cc -shared -o libresistance.so resistancecalc.o
 
+libcomponent.o: libcomponent.h
+	cc -c -fpic component.c -o libcomponent.o -lm
+	cc -shared -o libcomponent.so libcomponent.o
+
 .PHONY: lib
 lib: $(obj)
-	mkdir lib
+	mkdir -p lib
 	mv -f  *.so lib
 
 .PHONY: install

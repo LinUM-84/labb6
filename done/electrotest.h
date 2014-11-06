@@ -4,6 +4,7 @@ char* generateMenu();
 long parseMenuSelection(char* str);
 int start(char* str);
 long getInt(char* str);
-char getChar();
-float resCalc();
+float resCalc(char* str);
+void powerCalc(char* str);
+void findComp(char* str);
 #endif

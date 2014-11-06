@@ -5,11 +5,10 @@
 #include "electrotest.h"
 #include "libresistance.h"
 #include "libpower.h"
+#include "libcomponent.h"
 
 /* Define the maximum allowable length for data entry */
 #define MAX_STRING_LENGTH 20
-
-void powerCalc(char* str);
 
 int main ( int argc, char* argv[] ) {
 	
@@ -23,6 +22,8 @@ int main ( int argc, char* argv[] ) {
 	}
 	
 	int menuChoice = 0;
+
+	/* Main program loop */
 	do {
 		menuChoice = start(str);
 
@@ -34,6 +35,7 @@ int main ( int argc, char* argv[] ) {
 
 }
 
+/* Display, menu, parse menu selection, call appropriate function */
 int start(char* str) {
 
 	/* Ask the user to select a function */
@@ -56,10 +58,10 @@ int start(char* str) {
 		break;
 
 	case 3:
+		findComp(str);		
 		break;
 
 	case 4:
-		
 		break;
 
 	default:
@@ -71,10 +73,9 @@ int start(char* str) {
 
 	return menuChoice;
 
-
-
 }
 
+/* Calculate the heat emission in resistor with shared library libpower.so */
 void powerCalc(char* str){
 
   	printf("Räkna från resistans eller ampere? (r | a). Ange q för att gå tillbaka till menyn. \n"); 
@@ -124,6 +125,30 @@ void powerCalc(char* str){
   	}
 }
 
+/* Uses shared library libcomponent.so in order to find replacement values in the E12 resistor series */
+
+void findComp(char *str) {
+
+	float *res_array = (float*)malloc(sizeof(float)*3);
+	float orig_resistance;
+	int i;
+
+	printf("Ersättningsresistans: ");
+	long res = getInt(str);
+	orig_resistance = (float)res;
+	
+	int count = e_resistance(orig_resistance, res_array);
+      
+	printf("Antal resistorer: %d\n", count);
+    
+	for( i = 0; i < count; i++){
+		printf("Resistor %d: %.0f\n", i+1, res_array[i]);
+	}
+	free(res_array);
+
+}
+
+/* parse the menu selection for coorect entries */
 long parseMenuSelection(char* str) {
 
 	/* Process the entered string and remove an eventual newline character */
@@ -136,13 +161,14 @@ long parseMenuSelection(char* str) {
 	
 	long menuChoice = strtol(str, NULL, 0);
 
-	if (menuChoice > 0 && menuChoice < 6)
+	if (menuChoice > 0 && menuChoice < 5)
 		return menuChoice;
 	else
 		return -1;
 	
 }
 
+/* Return the string representation of the text menu */
 char* generateMenu() {
 
 	char *menuString = 	"***Electrotest menu***\n"
@@ -158,7 +184,7 @@ char* generateMenu() {
 
 float resCalc(char* str) {
 
-	/* Allocate memory for the string of numbers */
+	/* Ask the user how many components he wants to use */
 	
 	long count = -1;
 	do {
@@ -168,7 +194,10 @@ float resCalc(char* str) {
 	} while (count == -1 || count < 0);
 
 	
+	/* Allocate memory for the number of components */
 	float *array = malloc (count * sizeof(float));
+	
+	/* Warn the user if the free memory is not enough */
 	if (str == NULL) {
 
 		printf("Otillräckligt ledigt minne");
@@ -178,6 +207,7 @@ float resCalc(char* str) {
 	
 	int i;
 	
+	/* For loop for entering resistor values */
 	for (i=0;i<count;i++) {
 		
 		long r = -1;
@@ -193,7 +223,8 @@ float resCalc(char* str) {
 	
 	char conn = 'x';
 	long choice = -1;
-		
+
+	/* Ask the user if he wants to calculate resulting resistance for series or paralell connection */		
 	do {
 	
 	printf("Vill du beräkna ersättningsresistans vid serie- (1) eller parallell-koppling (2)? ");
@@ -205,15 +236,17 @@ float resCalc(char* str) {
 		conn = 'P';
 	} while (choice == -1 || choice < 1);
 	
-	/*fgets(str, MAX_STRING_LENGTH, stdin);
-	const char* matches = "PS";
-	if (strchr(matches, str[0]) != NULL) {
-		strncpy(str, conn, 1);
-		printf("\nConn är %s", conn);
-	}*/
-	
 	float result = calc_resistance(count, conn, array);
-	printf("\nErsättningsresistansen är: %.2f\n", result);
+
+	/* Check result for error messages from calc_resistance */
+	if (result == -1)
+		printf("Felaktiga parametrar har angivits\n");
+	else if (result == 0)
+		printf("Du kan inte använda nollohmsmotstånd vid parallellkoppling\n");
+	else
+		printf("\nErsättningsresistansen är: %.2f\n", result);
+
+	free (array);
 	return result;
 
 }
