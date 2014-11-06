@@ -4,9 +4,12 @@
 #include <string.h>
 #include "electrotest.h"
 #include "libresistance.h"
+#include "libpower.h"
 
 /* Define the maximum allowable length for data entry */
 #define MAX_STRING_LENGTH 20
+
+void powerCalc(char* str);
 
 int main ( int argc, char* argv[] ) {
 	
@@ -49,6 +52,7 @@ int start(char* str) {
 		break;
 
 	case 2:
+	        powerCalc(str); 
 		break;
 
 	case 3:
@@ -69,6 +73,55 @@ int start(char* str) {
 
 
 
+}
+
+void powerCalc(char* str){
+
+  	printf("Räkna från resistans eller ampere? (r | a). Ange q för att gå tillbaka till menyn. \n"); 
+  	fgets (str, MAX_STRING_LENGTH, stdin); 
+
+  	float amp = 0; 
+  	float resistance = 0; 
+  	float volt = 0; 
+  	float watt = 0; 
+
+  	switch(str[0]){
+
+  	case 'r':
+    		printf("Ange ressistansen (ohm): ");
+    		fgets (str, MAX_STRING_LENGTH, stdin); 
+   		 resistance = strtof(str, NULL); 
+    
+    		printf("Ange volt: "); 
+    		fgets (str, MAX_STRING_LENGTH, stdin); 
+    		volt = strtof(str, NULL); 
+
+    		watt = calc_power_r(volt, resistance); 
+    
+    		printf("Watt: %.2f \n", watt); 
+    	break; 
+
+  	case 'a':
+    		printf("Ange flödet (amp): ");
+    		fgets (str, MAX_STRING_LENGTH, stdin); 
+   		amp = strtof(str, NULL); 
+    
+    		printf("Ange volt: "); 
+    		fgets (str, MAX_STRING_LENGTH, stdin); 
+    		volt = strtof(str, NULL); 
+
+    		watt = calc_power_i(volt, amp); 
+    		printf("Watt: %.2f \n", watt); 
+
+    	break;
+
+  	case 'q':
+    	break;
+
+  	default:
+    		powerCalc(str); 
+    	break;
+  	}
 }
 
 long parseMenuSelection(char* str) {
