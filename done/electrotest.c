@@ -2,10 +2,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libresistance.h>
+#include <libpower.h>
+#include <libcomponent.h>
 #include "electrotest.h"
-#include "libresistance.h"
-#include "libpower.h"
-#include "libcomponent.h"
 
 /* Define the maximum allowable length for data entry */
 #define MAX_STRING_LENGTH 20
