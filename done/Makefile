@@ -1,11 +1,9 @@
 obj = libpower.o resistancecalc.o libcomponent.o
 curr_dir = $(shell pwd)
 
-#-std=c99
-
 .PHONY: all
 all: lib
-	cc electrotest.c -o electrotest  -Llib -I. -lpower -lresistance  -lcomponent -lm    #compile with local libraries
+	cc electrotest.c -o electrotest  -Wl,-rpath,./lib -Llib -I. -lpower -lresistance  -lcomponent -lm    #compile with local libraries
 
 #objects
 libpower.o: libpower.h
@@ -29,10 +27,12 @@ lib: $(obj)
 install: 
 	sudo cp lib/libpower.so /usr/lib
 	sudo cp lib/libresistance.so /usr/lib	
+	sudo cp lib/libcomponent.so /usr/lib
 	sudo chmod 755 /usr/lib/libpower.so
-	sudo chmod 755 /usr/lib/libresistance.so	
+	sudo chmod 755 /usr/lib/libresistance.so
+	sudo chmod 755 /usr/lib/libcomponent.so	
 	sudo ldconfig
-	cc electrotest.c -o electrotest  -L/usr/lib -I. -lpower -lresistance  -lcomponent -lm 
+	cc electrotest.c -o electrotest  -Wl,-rpath,/usr/lib  -L/usr/lib -I. -lpower -lresistance  -lcomponent -lm 
 	sudo cp electrotest /usr/bin
 
 .PHONY: uninstall
@@ -40,6 +40,7 @@ uninstall:
 	sudo rm /usr/bin/electrotest
 	sudo rm /usr/lib/libpower.so
 	sudo rm /usr/lib/libresistance.so
+	sudo rm /usr/lib/libcomponent.so
 	sudo ldconfig # not sure if this line is required
 
 .PHONY: clean
